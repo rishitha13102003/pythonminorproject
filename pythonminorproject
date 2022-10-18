@@ -1,0 +1,63 @@
+import  pygame
+
+pygame.init()
+width, height = 700, 700
+screen = pygame.display.set_mode((width, height))
+timer_color = 255, 255, 255
+timer_font = pygame.font.SysFont(None, 100)
+start_time = 10
+clock = pygame.time.Clock()
+timer_event = pygame.USEREVENT+1
+pygame.time.set_timer(timer_event, 1000)
+text = timer_font.render(str(start_time), True, (0, 128, 0))
+white_color = (255,255,255)
+start_button =  timer_font.render('Start' , True , white_color)
+pause_button =  timer_font.render('Pause' , True , white_color)
+
+is_started=False
+is_paused=False
+Game=True
+
+while Game:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            Game=False
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if width-700 <= mouse[0] <= width-700+140 and height-200 <= mouse[1] <= height-200+40:
+                if is_started is False:
+                    is_started = True
+                    start_button =  timer_font.render('Stop' , True , white_color)
+                elif is_started is True:
+                    is_started = False
+                    start_button =  timer_font.render('Start' , True , white_color)
+            if width-300 <= mouse[0] <= width-300+140 and height-200 <= mouse[1] <= height-200+40:
+                if is_started is True:
+                    is_paused = not is_paused
+                    if is_paused is True:
+                        pause_button =  timer_font.render('Resume' , True , white_color)
+                    else:
+                        pause_button =  timer_font.render('Pause' , True , white_color)
+
+        elif event.type == timer_event:
+                if is_paused is not True:
+                    if is_started is True:
+                        start_time -= 1
+                        text = timer_font.render(str(start_time), True, (0, 128, 0))
+                    elif is_started is False:
+                        text = timer_font.render(str(10), True, (0, 128, 0))
+                    if start_time == 0:
+                        pygame.time.set_timer(timer_event, 0)
+    
+    screen.fill((0, 0, 0))
+
+    mouse = pygame.mouse.get_pos()               
+    screen.blit(start_button , (width-700,height-200))
+    if is_started is True:
+        screen.blit(pause_button , (width-300,height-200))
+    
+
+    text_rect = text.get_rect(center = screen.get_rect().center)
+    screen.blit(text, text_rect)
+    pygame.display.flip()
+
+pygame.quit()
